@@ -1,6 +1,7 @@
 """Delivery Route Environment"""
 
 import sys
+import time
 from contextlib import closing
 from io import StringIO
 
@@ -18,6 +19,8 @@ DONE_REWARD = 0
 GOAL_REWARD = 100.0
 VALID_STEP_REWARD = -1.0
 INVALID_STEP_REWARD = -5.0
+
+MAX_STEPS = 100
 
 MAP = [
     "GSGGRGGRGRGGRGGG",  # TODO: change S to R upon random start
@@ -112,6 +115,8 @@ class DeliveryRouteEnv(Env):
         self.nS = nS
         self.nA = nA
 
+        self.remaining_steps = MAX_STEPS
+
         self.action_space = spaces.Discrete(self.nA)
         self.observation_space = spaces.Discrete(self.nS)
 
@@ -125,6 +130,7 @@ class DeliveryRouteEnv(Env):
     def reset(self):
         self.s = categorical_sample(self.isd, self.np_random)
         self.lastaction = None
+        self.remaining_steps = MAX_STEPS
         return self.s
 
     def step(self, a):
@@ -133,9 +139,14 @@ class DeliveryRouteEnv(Env):
         p, s, r, d = transitions[i]
         self.s = s
         self.lastaction = a
+        self.remaining_steps -= 1
+
+        if self.remaining_steps <= 0:
+            d = True
+
         return s, r, d, {"prob": p}
 
-    def render(self, mode='human'):
+    def render(self, mode='human', wait=0):
         outfile = StringIO() if mode == 'ansi' else sys.stdout
 
         row, col = self.s // self.ncol, self.s % self.ncol
@@ -147,6 +158,8 @@ class DeliveryRouteEnv(Env):
         else:
             outfile.write("\n")
         outfile.write("\n".join(''.join(line) for line in desc) + "\n")
+
+        time.sleep(wait)
 
         if mode != 'human':
             with closing(outfile):
