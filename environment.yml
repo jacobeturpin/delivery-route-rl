@@ -10,8 +10,8 @@ dependencies:
   - ignite
   - opencv
   - ffmpeg
-  - tensorboard
-  - tensorflow
+  - tensorboard=2.0
+  - tensorflow=2.0
   - pip
   - pip:
     - -r requirements.txt
