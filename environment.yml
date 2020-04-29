@@ -12,6 +12,7 @@ dependencies:
   - ffmpeg
   - tensorboard=2.0
   - tensorflow=2.0
+  - numpy
   - pip
   - pip:
     - -r requirements.txt

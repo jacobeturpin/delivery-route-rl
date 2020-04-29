@@ -4,14 +4,14 @@ import collections
 
 from tensorboardX import SummaryWriter
 
-from env import DeliveryRouteEnv
+from env import DeliveryRouteEnv, MAP
 
 GAMMA = 0.9
-ALPHA = 0.2
-TEST_EPISODES = 20
+ALPHA = 0.8
+TEST_EPISODES = 1
 
 
-def random_play(environment, episodes=10, render=False):
+def random_play(environment, episodes=10, render=False, wait=0):
 
     for ep in range(episodes):
 
@@ -24,7 +24,7 @@ def random_play(environment, episodes=10, render=False):
             obs, reward, done, _ = environment.step(action)
 
             if render:
-                env.render()
+                env.render(wait=wait)
 
             total_reward += reward
             total_steps += 1
@@ -76,16 +76,17 @@ class Agent:
 
 
 if __name__ == '__main__':
-    env = DeliveryRouteEnv()
+    env = DeliveryRouteEnv(MAP)
 
     random_play(env)
 
     test_env = env
-    agent = Agent(environment=DeliveryRouteEnv())
+    agent = Agent(environment=DeliveryRouteEnv(MAP, random_start=True))
     writer = SummaryWriter(comment="-q-learning")
 
     iter_no = 0
-    best_reward = -1000.0
+    best_reward = -float('inf')
+
     while True:
         iter_no += 1
         s, a, r, next_s = agent.sample_env()
@@ -100,11 +101,10 @@ if __name__ == '__main__':
             print("Best reward updated %.3f -> %.3f" % (
                 best_reward, reward))
             best_reward = reward
-        if reward > 0.80:
+        if reward > 20.0:
             print("Solved in %d iterations!" % iter_no)
             break
     writer.close()
-
 
 
 
