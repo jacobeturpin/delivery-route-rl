@@ -62,13 +62,15 @@ class Agent:
         old_v = self.values[(s, a)]
         self.values[(s, a)] = old_v * (1-ALPHA) + new_v * ALPHA
 
-    def play_episode(self, env):
+    def play_episode(self, env, render=False, wait=0):
         total_reward = 0.0
         state = env.reset()
         while True:
             _, action = self.best_value_and_action(state)
             new_state, reward, is_done, _ = env.step(action)
             total_reward += reward
+            if render:
+                env.render(wait=wait)
             if is_done:
                 break
             state = new_state
@@ -106,5 +108,4 @@ if __name__ == '__main__':
             break
     writer.close()
 
-
-
+    agent.play_episode(test_env, render=True, wait=1)
