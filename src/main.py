@@ -8,7 +8,6 @@ from env import DeliveryRouteEnv, MAP
 
 GAMMA = 0.9
 ALPHA = 0.8
-TEST_EPISODES = 1
 
 
 def random_play(environment, episodes=10, render=False, wait=0):
@@ -79,7 +78,6 @@ class Agent:
 
 if __name__ == '__main__':
     env = DeliveryRouteEnv(MAP)
-
     random_play(env)
 
     test_env = env
@@ -91,21 +89,23 @@ if __name__ == '__main__':
 
     while True:
         iter_no += 1
+
+        # Sample simple action and update Q-value
         s, a, r, next_s = agent.sample_env()
         agent.value_update(s, a, r, next_s)
 
-        reward = 0.0
-        for _ in range(TEST_EPISODES):
-            reward += agent.play_episode(test_env)
-        reward /= TEST_EPISODES
+        # Test current Q-values
+        reward = agent.play_episode(test_env)
         writer.add_scalar("reward", reward, iter_no)
+
         if reward > best_reward:
-            print("Best reward updated %.3f -> %.3f" % (
-                best_reward, reward))
+            print("Best reward updated %.3f -> %.3f" % (best_reward, reward))
             best_reward = reward
+
         if reward > 20.0:
             print("Solved in %d iterations!" % iter_no)
             break
+
     writer.close()
 
     agent.play_episode(test_env, render=True, wait=1)

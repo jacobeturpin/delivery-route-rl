@@ -74,7 +74,7 @@ class DeliveryRouteEnv(Env):
         self.nS = self.nrow * self.ncol
 
         self.p, self.isd = self._create_transition_matrix()
-        self.lastaction = None  # for rendering
+        self.last_action = None  # for rendering
 
         self.remaining_steps = MAX_STEPS
 
@@ -152,7 +152,7 @@ class DeliveryRouteEnv(Env):
         self.p, self.isd = self._create_transition_matrix()
 
         self.s = categorical_sample(self.isd, self.np_random)
-        self.lastaction = None
+        self.last_action = None
         self.remaining_steps = MAX_STEPS
         return self.s
 
@@ -161,7 +161,7 @@ class DeliveryRouteEnv(Env):
         i = categorical_sample([t[0] for t in transitions], self.np_random)
         p, s, r, d = transitions[i]
         self.s = s
-        self.lastaction = a
+        self.last_action = a
         self.remaining_steps -= 1
 
         if self.remaining_steps <= 0:
@@ -176,8 +176,8 @@ class DeliveryRouteEnv(Env):
         desc = self.desc.tolist()
         desc = [[c.decode('utf-8') for c in line] for line in desc]
         desc[row][col] = utils.colorize(desc[row][col], "red", highlight=True)
-        if self.lastaction is not None:
-            outfile.write("  ({})\n".format(["Left", "Down", "Right", "Up"][self.lastaction]))
+        if self.last_action is not None:
+            outfile.write("  ({})\n".format(["Left", "Down", "Right", "Up"][self.last_action]))
         else:
             outfile.write("\n")
         outfile.write("\n".join(''.join(line) for line in desc) + "\n")
