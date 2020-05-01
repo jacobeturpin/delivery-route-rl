@@ -102,7 +102,7 @@ if __name__ == '__main__':
             print("Best reward updated %.3f -> %.3f" % (best_reward, reward))
             best_reward = reward
 
-        if reward > 20.0:
+        if reward > 70.0:
             print("Solved in %d iterations!" % iter_no)
             break
 
